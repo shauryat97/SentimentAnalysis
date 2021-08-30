@@ -7,8 +7,8 @@ def split_set(file):
     test_set = []
     l = [i for i in range(1000)]
     random.shuffle(l)
-    for i in l[:750]:
+    for i in l[:700]:
         train_set.append(lines_lst[i])
-    for i in l[750:]:
+    for i in l[700:]:
         test_set.append(lines_lst[i])
     return train_set,test_set
