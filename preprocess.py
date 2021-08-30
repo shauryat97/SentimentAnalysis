@@ -15,7 +15,6 @@ def preprocess(review_lst):
     lemmatizer = WordNetLemmatizer()
     for line in review_lst:
        sent = line.lower()
-    #    sent = line.strip().lower() # converting all characters to lowercase.
        labels.append(int(sent[-2])) # extracting labels 1 or 0 
        sent = sent[:len(sent)-2]
        alnum_string = re.sub(r"[^a-zA-Z0-9]"," ",sent) # removing any special characters.
@@ -34,3 +33,11 @@ def listToString(s):
 
     string = " " 
     return (string.join(s))
+
+
+def string_lst(doc):
+    lst = []
+    for i in range(len(doc)):
+        string = listToString(doc[i])
+        lst.append(string)
+    return lst
