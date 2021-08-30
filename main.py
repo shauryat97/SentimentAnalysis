@@ -10,14 +10,21 @@ from split import split_set
 import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import classification_report
-from pca import *
-from svm import *
+from pca_utils import *
+from svm_utils import *
+from sklearn.preprocessing import StandardScaler
 import warnings
 warnings.filterwarnings('ignore')
+import os
+
+
+cwd = os.getcwd()
+cwd+='/movieReviews1000.txt' # don't change file name
+
 
 # Split datasets into training and test
 
-review_text = open(r'/Users/shauryatiwari/Desktop/work/ass1_2/movieReviews1000.txt','r')
+review_text = open(cwd,'r')
 train_set,test_set,len_test = split_set(review_text)
 
 # Preprocessing - remove special characters , remove stopwords ,  lemmatize , tokenize.
@@ -34,71 +41,36 @@ test_lst = string_lst(test_docs)
 vectorizer = TfidfVectorizer()
 train_vectors = vectorizer.fit_transform(train_lst)
 test_vectors = vectorizer.transform(test_lst)
-train_dense = train_vectors.todense() #numpy matrix
+train_dense = train_vectors.todense() #convert from scipy matrix to numpy matrix
 test_dense = test_vectors.todense()
 
-# print(len(vectorizer.get_feature_names()))
-# print(train_dense.shape)
 
 # PCA to reduce dimension
-
+k = 10 # Number of components.
 N_train = train_dense.shape[0]
-XafterMean_train,mean = get_XafterMean(train_dense,N_train)
-XX_T = get_XXtranspose(XafterMean_train)
-eigenval,eigenvec = eigen(XX_T/N_train)
-eigenval,eigenvec  = eigsorted(eigenval,eigenvec)
-U = get_U(N_train,XafterMean_train,eigenvec)
-Uprime = U[:,:10] # Taking first k eigen vectors corresponding to k largest eigen values ; Here k=10
-Y_train,pca = calc_pca(XafterMean_train)
-# Y_train = toPCA(N_train,XafterMean_train,Uprime,10)
+train_dense,mean = get_XafterMean(train_dense,N_train)
+test_dense= get_XafterMean_test(test_dense,mean)
+train_dense,test_dense = calc_pca(train_dense,test_dense,k)
 
 
-# For test data
-XafterMean_test = get_XafterMean_test(test_dense,mean)
-Uprime_test = U[:,:10]
-Y_test = pca.transform(XafterMean_test)
-# Y_test = toPCA(len_test,XafterMean_test,Uprime_test,10)
-# # Therefore I would suggest (analogously to the common mean imputation of missing values) to perform TF-IDF-normalization on the training set seperately
-# #  and then use the IDF-vector from the training set to calculate the TF-IDF vectors of the test set.
+# Train SVM model and test on test set - try different kernels - rbf,poly,linear
 
-
-# # Train SVM model and test on test set - try different kernels - rbf,poly,linear
 train_labels = np.array(train_labels).reshape(N_train,-1)
 test_labels = np.array(test_labels).reshape(len_test,-1)
 
-def main(lst_kernel):
+def main_svm(train_dense,test_dense,train_labels,test_labels,lst_kernel):
+
     for kernel in lst_kernel:
-        y_pred,n_support = svm_model(Y_train,train_labels,Y_test,kernel)
+        y_pred,n_support = svm_model(train_dense,train_labels,test_dense,kernel)
         y_pred = y_pred.reshape(y_pred.shape[0],-1)
-        target_names = ['class 0', 'class 1']
         out_string = ' '+kernel+' '+'kernel '
-        print(out_string+'\n\n')
-        acc = np.sum(np.abs(y_pred-test_labels))
-        print(1-(acc/y_pred.shape[0]))
+        print(out_string+'\n')
+        acc = np.sum((np.equal(y_pred,test_labels)))
+        acc= acc/y_pred.shape[0]
+        print('acc',round(acc*100,4),'\n')
         n_support = sum(n_support)
-        print(' Number of Support Vectors =  ',n_support)
+        print(' Number of Support Vectors =  ',n_support,'\n')
 
 lst_kernel = ['linear','rbf','poly']
-# main(lst_kernel)
-
-
-
-# seperate 
-from sklearn.preprocessing import StandardScaler
-
-scaler = StandardScaler()
-# Fit on training set only.
-scaler.fit(train_dense)
-# Apply transform to both the training set and the test set.
-train_dense= scaler.transform(train_dense)
-test_dense = scaler.transform(test_dense)
-print('before',train_dense.shape)
-
-pca = PCA(n_components=10)
-pca.fit(train_dense)
-
-train_dense = pca.transform(train_dense)
-test_dense = pca.transform(test_dense)
-print('after',train_dense.shape)
-main(lst_kernel)
+main_svm(train_dense,test_dense,train_labels,test_labels,lst_kernel)
 
