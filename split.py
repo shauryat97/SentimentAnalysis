@@ -6,9 +6,11 @@ def split_set(file):
     train_set = []
     test_set = []
     l = [i for i in range(1000)]
+    random.seed(0)
     random.shuffle(l)
     for i in l[:700]:
         train_set.append(lines_lst[i])
     for i in l[700:]:
         test_set.append(lines_lst[i])
-    return train_set,test_set
+    len_test = len(test_set)
+    return train_set,test_set,len_test
