@@ -10,7 +10,7 @@ Each Line is a review with a label(0 or 1) associated at the end of the review.
 # Supervised Approach
 
 # Steps involved
-- Split the data into two subsets. One for training (first 750 reviews) and the other for testing (last 250 reviews). 
+- Split the data into two subsets. One for training (first 700 reviews) and the other for testing (last 300 reviews). 
 - Use TF-IDF to vectorize your input.
 - Reduce dimension of feature vector to 10 by appying Principal Component Analysis(PCA).
 - Train a SVM model. And check the performance on the test set in terms of review classification accuracy.
