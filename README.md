@@ -30,3 +30,20 @@ Each Line is a review with a label(0 or 1) associated at the end of the review.
 | Linear      | 58.33 | 623 |
 | Rbf  | **65.33**      |   **597** |
 | Poly   | 56     | 596  |
+
+
+# Supervised Approach
+
+# Steps involved
+- Split the data into two subsets. One for training (first 700 reviews) and the other for testing (last 300 reviews). 
+- Use TF-IDF to vectorize your input.
+- Reduce dimension of feature vector to 10 by appying Principal Component Analysis(PCA).
+- Train a two mixture diagonal covariance GMM on this data.
+- Wrote the Expectation Maximization algorithm from scratch for finding out the parameters of the gaussian distributions.
+
+# Results
+
+| GMM Intialization Method      | Classification Accuracy           | 
+| ------------- |:-------------:|
+| KMeans     | 50.3 | 
+| Random  | 49.7 | 
