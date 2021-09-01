@@ -1,8 +1,6 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.stats import multivariate_normal
 from pca_utils import *
-from svm_utils import *
 import nltk
 from sklearn.cluster import KMeans
 from preprocess import preprocess,listToString,string_lst
