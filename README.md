@@ -32,7 +32,7 @@ Each Line is a review with a label(0 or 1) associated at the end of the review.
 | Poly   | 56     | 596  |
 
 
-# Supervised Approach
+# Unsupervised Approach
 
 # Steps involved
 - Split the data into two subsets. One for training (first 700 reviews) and the other for testing (last 300 reviews). 
